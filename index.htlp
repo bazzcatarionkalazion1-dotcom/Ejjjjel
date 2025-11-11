@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Konten</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a0000 0%, #000000 50%, #1a0000 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 1.1em;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .filter-btn {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border: 2px solid #ff0000;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-btn:hover {
+            background: #ff0000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .filter-btn.active {
+            background: #ff0000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .content-card {
+            background: rgba(20, 0, 0, 0.8);
+            border: 1px solid #ff0000;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .content-card:hover::before {
+            left: 100%;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+            border-color: #ff3333;
+        }
+
+        .card-emoji {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .card-category {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #ff0000;
+            border-radius: 15px;
+            font-size: 0.85em;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-title {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .card-description {
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .card-link {
+            display: inline-block;
+            color: #ff0000;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .card-link:hover {
+            color: #ff3333;
+            border-bottom-color: #ff3333;
+            transform: translateX(5px);
+        }
+
+        .content-card.hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .filter-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-btn {
+                justify-content: center;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Portal Filsafat</h1>
+            <p class="subtitle">Jelajahi pemikiran dan kebijaksanaan filosofis</p>
+        </header>
+
+        <div class="content-grid" id="contentGrid">
+            <!-- Filsafat -->
+            <div class="content-card" data-category="filsafat">
+                <span class="card-emoji">🤔</span>
+                <span class="card-category">Filsafat</span>
+                <h3 class="card-title">Stanford Encyclopedia of Philosophy</h3>
+                <p class="card-description">Ensiklopedia filsafat online yang komprehensif dengan artikel-artikel mendalam dari para ahli.</p>
+                <a href="https://plato.stanford.edu/" target="_blank" class="card-link">Kunjungi SEP →</a>
+            </div>
+
+            <div class="content-card" data-category="filsafat">
+                <span class="card-emoji">🧠</span>
+                <span class="card-category">Filsafat</span>
+                <h3 class="card-title">Internet Encyclopedia of Philosophy</h3>
+                <p class="card-description">Sumber referensi filsafat peer-reviewed yang mudah diakses untuk pelajar dan peneliti.</p>
+                <a href="https://iep.utm.edu/" target="_blank" class="card-link">Kunjungi IEP →</a>
+            </div>
+
+            <div class="content-card" data-category="filsafat">
+                <span class="card-emoji">🌌</span>
+                <span class="card-category">Filsafat</span>
+                <h3 class="card-title">Philosophy Now</h3>
+                <p class="card-description">Majalah filsafat yang membahas isu-isu kontemporer dengan pendekatan yang mudah dipahami.</p>
+                <a href="https://philosophynow.org/" target="_blank" class="card-link">Kunjungi Philosophy Now →</a>
+            </div>
+
+            <!-- Belajar & Edukasi -->
+            <div class="content-card" data-category="filsafat">
+                <span class="card-emoji">📖</span>
+                <span class="card-category">Filsafat</span>
+                <h3 class="card-title">Philpapers</h3>
+                <p class="card-description">Database komprehensif artikel dan paper filosofis dengan jutaan entri dari seluruh dunia.</p>
+                <a href="https://philpapers.org/" target="_blank" class="card-link">Kunjungi Philpapers →</a>
+            </div>
+
+            <div class="content-card" data-category="filsafat">
+                <span class="card-emoji">🎓</span>
+                <span class="card-category">Filsafat</span>
+                <h3 class="card-title">MIT OpenCourseWare Philosophy</h3>
+                <p class="card-description">Kursus filsafat gratis dari MIT dengan lecture notes, readings, dan video pembelajaran.</p>
+                <a href="https://ocw.mit.edu/courses/linguistics-and-philosophy/" target="_blank" class="card-link">Kunjungi MIT OCW →</a>
+            </div>
+
+            <div class="content-card" data-category="filsafat">
+                <span class="card-emoji">✍️</span>
+                <span class="card-category">Filsafat</span>
+                <h3 class="card-title">Project Gutenberg Philosophy</h3>
+                <p class="card-description">Koleksi buku-buku klasik filsafat yang dapat diunduh gratis dalam berbagai format.</p>
+                <a href="https://www.gutenberg.org/ebooks/bookshelf/25" target="_blank" class="card-link">Kunjungi Project Gutenberg →</a>
+            </div>
+
+            <!-- Teknologi & Coding -->
+            <div class="content-card" data-category="filsafat">
+                <span class="card-emoji">🎙️</span>
+                <span class="card-category">Filsafat</span>
+                <h3 class="card-title">Philosophy Bites</h3>
+                <p class="card-description">Podcast filsafat dengan wawancara singkat dari para filsuf terkemuka tentang berbagai topik.</p>
+                <a href="https://philosophybites.com/" target="_blank" class="card-link">Kunjungi Philosophy Bites →</a>
+            </div>
+
+            <div class="content-card" data-category="filsafat">
+                <span class="card-emoji">📚</span>
+                <span class="card-category">Filsafat</span>
+                <h3 class="card-title">Daily Philosophy</h3>
+                <p class="card-description">Artikel filosofis harian yang mudah dicerna untuk memulai hari dengan pemikiran mendalam.</p>
+                <a href="https://dailyphilosophy.com/" target="_blank" class="card-link">Kunjungi Daily Philosophy →</a>
+            </div>
+
+            <div class="content-card" data-category="filsafat">
+                <span class="card-emoji">🌐</span>
+                <span class="card-category">Filsafat</span>
+                <h3 class="card-title">The Philosopher's Magazine</h3>
+                <p class="card-description">Majalah yang membahas ide-ide filosofis dengan cara yang accessible dan relevan untuk kehidupan modern.</p>
+                <a href="https://www.philosophersmag.com/" target="_blank" class="card-link">Kunjungi TPM →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // All cards are philosophy category, no filtering needed
+        // Keep for potential future expansion
+    </script>
+</body>
+</html>
