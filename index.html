@@ -1,0 +1,337 @@
+import React, { useState } from 'react';
+import { Search, Star, Tag, Plus, X, Edit2, Trash2, Bookmark } from 'lucide-react';
+
+export default function TreelinkApp() {
+  const [links, setLinks] = useState([
+    { id: 1, title: 'Stanford Encyclopedia of Philosophy', url: 'https://plato.stanford.edu', category: 'Filsafat', tags: ['filsafat', 'referensi'], favorite: true, note: 'Ensiklopedia filsafat terlengkap' },
+    { id: 2, title: 'Internet Encyclopedia of Philosophy', url: 'https://iep.utm.edu', category: 'Filsafat', tags: ['filsafat'], favorite: false, note: '' },
+    { id: 3, title: 'Khan Academy', url: 'https://khanacademy.org', category: 'Belajar & Edukasi', tags: ['matematika', 'belajar'], favorite: true, note: 'Materi matematika & sains' },
+    { id: 4, title: 'GitHub', url: 'https://github.com', category: 'Teknologi & Coding', tags: ['coding', 'teknologi'], favorite: true, note: 'Portfolio & repo project' },
+    { id: 5, title: 'Python Tutorial', url: 'https://docs.python.org/3/tutorial', category: 'Teknologi & Coding', tags: ['coding', 'python'], favorite: false, note: 'Dokumentasi resmi Python' },
+  ]);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Semua');
+  const [selectedTag, setSelectedTag] = useState('');
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingLink, setEditingLink] = useState(null);
+
+  const [newLink, setNewLink] = useState({
+    title: '',
+    url: '',
+    category: 'Filsafat',
+    tags: [],
+    note: ''
+  });
+
+  const categories = ['Semua', 'Filsafat', 'Belajar & Edukasi', 'Teknologi & Coding'];
+  const categoryEmojis = {
+    'Filsafat': '🧠',
+    'Belajar & Edukasi': '📚',
+    'Teknologi & Coding': '💻'
+  };
+
+  const allTags = [...new Set(links.flatMap(link => link.tags))];
+
+  const filteredLinks = links.filter(link => {
+    const matchSearch = link.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                       link.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchCategory = selectedCategory === 'Semua' || link.category === selectedCategory;
+    const matchTag = !selectedTag || link.tags.includes(selectedTag);
+    const matchFavorite = !showFavoritesOnly || link.favorite;
+    
+    return matchSearch && matchCategory && matchTag && matchFavorite;
+  });
+
+  const toggleFavorite = (id) => {
+    setLinks(links.map(link => 
+      link.id === id ? { ...link, favorite: !link.favorite } : link
+    ));
+  };
+
+  const deleteLink = (id) => {
+    setLinks(links.filter(link => link.id !== id));
+  };
+
+  const addLink = () => {
+    if (newLink.title && newLink.url) {
+      setLinks([...links, { 
+        ...newLink, 
+        id: Date.now(), 
+        favorite: false,
+        tags: newLink.tags.filter(t => t.trim() !== '')
+      }]);
+      setNewLink({ title: '', url: '', category: 'Filsafat', tags: [], note: '' });
+      setShowAddModal(false);
+    }
+  };
+
+  const startEdit = (link) => {
+    setEditingLink({ ...link, tags: [...link.tags] });
+  };
+
+  const saveEdit = () => {
+    setLinks(links.map(link => 
+      link.id === editingLink.id ? editingLink : link
+    ));
+    setEditingLink(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-red-900 to-black border-b-2 border-red-600 py-8 px-6">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-4xl font-bold text-red-500 mb-2">🔗 Treelink</h1>
+          <p className="text-gray-300">Hub Link Pribadi - Organize Your Knowledge</p>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto p-6">
+        {/* Search & Filter Bar */}
+        <div className="bg-gray-900 border border-red-600 rounded-lg p-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Search */}
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+              <input
+                type="text"
+                placeholder="Cari link atau tag..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-black border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white focus:border-red-500 focus:outline-none"
+              />
+            </div>
+
+            {/* Favorite Filter */}
+            <button
+              onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+              className={`px-4 py-2 rounded-lg border-2 flex items-center gap-2 transition-all ${
+                showFavoritesOnly 
+                  ? 'bg-red-600 border-red-600 text-white' 
+                  : 'border-gray-700 text-gray-300 hover:border-red-600'
+              }`}
+            >
+              <Bookmark size={18} />
+              Favorit
+            </button>
+
+            {/* Add Link Button */}
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg flex items-center gap-2 transition-all"
+            >
+              <Plus size={18} />
+              Tambah Link
+            </button>
+          </div>
+
+          {/* Categories */}
+          <div className="flex flex-wrap gap-2 mt-4">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-4 py-2 rounded-lg border-2 transition-all ${
+                  selectedCategory === cat
+                    ? 'bg-red-600 border-red-600 text-white'
+                    : 'border-gray-700 text-gray-300 hover:border-red-600'
+                }`}
+              >
+                {cat !== 'Semua' && categoryEmojis[cat]} {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Tags */}
+          {allTags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              <span className="text-gray-400 text-sm mr-2">Tags:</span>
+              {allTags.map(tag => (
+                <button
+                  key={tag}
+                  onClick={() => setSelectedTag(selectedTag === tag ? '' : tag)}
+                  className={`px-3 py-1 rounded-full text-sm border transition-all ${
+                    selectedTag === tag
+                      ? 'bg-red-600 border-red-600 text-white'
+                      : 'border-gray-700 text-gray-400 hover:border-red-500'
+                  }`}
+                >
+                  #{tag}
+                </button>
+              ))}
+              {selectedTag && (
+                <button
+                  onClick={() => setSelectedTag('')}
+                  className="px-3 py-1 text-sm text-red-500 hover:text-red-400"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Links Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredLinks.map(link => (
+            <div
+              key={link.id}
+              className="bg-gray-900 border border-gray-800 hover:border-red-600 rounded-lg p-4 transition-all group"
+            >
+              <div className="flex justify-between items-start mb-2">
+                <span className="text-2xl">{categoryEmojis[link.category]}</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => toggleFavorite(link.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Star
+                      size={18}
+                      className={link.favorite ? 'fill-red-500 text-red-500' : 'text-gray-500 hover:text-red-500'}
+                    />
+                  </button>
+                  <button
+                    onClick={() => startEdit(link)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 hover:text-red-500"
+                  >
+                    <Edit2 size={18} />
+                  </button>
+                  <button
+                    onClick={() => deleteLink(link.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 hover:text-red-500"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+
+              <h3 className="text-lg font-semibold text-white mb-1">{link.title}</h3>
+              <p className="text-sm text-red-500 mb-2">{link.category}</p>
+              
+              {link.note && (
+                <p className="text-sm text-gray-400 mb-2 italic">"{link.note}"</p>
+              )}
+
+              <div className="flex flex-wrap gap-1 mb-3">
+                {link.tags.map(tag => (
+                  <span
+                    key={tag}
+                    className="px-2 py-1 bg-red-900/30 border border-red-800 rounded text-xs text-red-400"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-sm text-gray-400 hover:text-red-500 truncate transition-colors"
+              >
+                {link.url}
+              </a>
+            </div>
+          ))}
+        </div>
+
+        {filteredLinks.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            Tidak ada link yang sesuai dengan filter
+          </div>
+        )}
+      </div>
+
+      {/* Add/Edit Modal */}
+      {(showAddModal || editingLink) && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-900 border-2 border-red-600 rounded-lg p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-red-500">
+                {editingLink ? 'Edit Link' : 'Tambah Link Baru'}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowAddModal(false);
+                  setEditingLink(null);
+                }}
+                className="text-gray-400 hover:text-white"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <input
+                type="text"
+                placeholder="Judul"
+                value={editingLink ? editingLink.title : newLink.title}
+                onChange={(e) => editingLink 
+                  ? setEditingLink({...editingLink, title: e.target.value})
+                  : setNewLink({...newLink, title: e.target.value})
+                }
+                className="w-full bg-black border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-red-500 focus:outline-none"
+              />
+
+              <input
+                type="url"
+                placeholder="URL"
+                value={editingLink ? editingLink.url : newLink.url}
+                onChange={(e) => editingLink
+                  ? setEditingLink({...editingLink, url: e.target.value})
+                  : setNewLink({...newLink, url: e.target.value})
+                }
+                className="w-full bg-black border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-red-500 focus:outline-none"
+              />
+
+              <select
+                value={editingLink ? editingLink.category : newLink.category}
+                onChange={(e) => editingLink
+                  ? setEditingLink({...editingLink, category: e.target.value})
+                  : setNewLink({...newLink, category: e.target.value})
+                }
+                className="w-full bg-black border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-red-500 focus:outline-none"
+              >
+                <option value="Filsafat">🧠 Filsafat</option>
+                <option value="Belajar & Edukasi">📚 Belajar & Edukasi</option>
+                <option value="Teknologi & Coding">💻 Teknologi & Coding</option>
+              </select>
+
+              <input
+                type="text"
+                placeholder="Tags (pisahkan dengan koma)"
+                value={editingLink ? editingLink.tags.join(', ') : newLink.tags.join(', ')}
+                onChange={(e) => {
+                  const tags = e.target.value.split(',').map(t => t.trim());
+                  editingLink
+                    ? setEditingLink({...editingLink, tags})
+                    : setNewLink({...newLink, tags});
+                }}
+                className="w-full bg-black border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-red-500 focus:outline-none"
+              />
+
+              <textarea
+                placeholder="Catatan (opsional)"
+                value={editingLink ? editingLink.note : newLink.note}
+                onChange={(e) => editingLink
+                  ? setEditingLink({...editingLink, note: e.target.value})
+                  : setNewLink({...newLink, note: e.target.value})
+                }
+                className="w-full bg-black border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-red-500 focus:outline-none h-20"
+              />
+
+              <button
+                onClick={editingLink ? saveEdit : addLink}
+                className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition-colors"
+              >
+                {editingLink ? 'Simpan Perubahan' : 'Tambah Link'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
